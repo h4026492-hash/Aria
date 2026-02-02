@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SadTalker Test</title>
+    <style>
+      body { background: #0b1020; color: #fff; font-family: system-ui, -apple-system, 'Segoe UI', Roboto; display:flex; align-items:center; justify-content:center; height:100vh; }
+      .card { background: rgba(255,255,255,0.03); padding:20px; border-radius:12px; max-width:720px; width:100%; text-align:center }
+      input, button { padding:10px 14px; border-radius:8px; border: none; }
+      video { width:100%; margin-top:16px; border-radius:8px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>SadTalker /speak test</h2>
+      <p>Enter server URL and text, then press Generate to synthesize and play the resulting MP4.</p>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <input id="server" placeholder="http://localhost:5000" value="http://localhost:5000" style="flex:1" />
+        <input id="text" placeholder="Hello there" value="Hello from the web test!" style="flex:2" />
+        <button id="btn">Generate</button>
+      </div>
+
+      <div id="status" style="margin-top:12px; color:#cbd5e1"></div>
+      <video id="player" controls></video>
+    </div>
+
+    <script>
+      const btn = document.getElementById('btn');
+      const status = document.getElementById('status');
+      const player = document.getElementById('player');
+
+      btn.addEventListener('click', async () => {
+        status.textContent = 'Contacting server...';
+        const server = document.getElementById('server').value;
+        const text = document.getElementById('text').value;
+
+        try {
+          const res = await fetch(server.replace(/\/$/, '') + '/speak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+          });
+
+          if (!res.ok) {
+            const t = await res.text();
+            status.textContent = `Server error: ${res.status} ${t}`;
+            return;
+          }
+
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          player.src = url;
+          player.play().catch(() => {});
+          status.textContent = 'Playing...';
+        } catch (err) {
+          status.textContent = 'Failed: ' + err;
+        }
+      });
+    </script>
+  </body>
+</html>
