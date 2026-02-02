@@ -36,6 +36,7 @@ CORS(app)
 
 BASE = Path(__file__).resolve().parent
 SADTALKER_ROOT = os.environ.get('SADTALKER_ROOT', str(BASE))
+SADTALKER_API_KEY = os.environ.get('SADTALKER_API_KEY')
 TEMP = BASE / 'temp'
 RESULTS = BASE / 'results'
 SOURCE_IMAGE = BASE / 'face.jpg'  # put your face image here
@@ -65,6 +66,26 @@ def run_sadtalker(audio_path: str, out_dir: str, source_image: str = None):
     return proc.returncode == 0
 
 
+def check_api_key(req) -> bool:
+    """Return True if the request is authorized or no API key is configured."""
+    if not SADTALKER_API_KEY:
+        # No key configured, allow open access
+        return True
+
+    # Check Authorization: Bearer <token>
+    auth = req.headers.get('Authorization', '')
+    if auth.startswith('Bearer '):
+        token = auth.split(' ', 1)[1].strip()
+        return token == SADTALKER_API_KEY
+
+    # Check x-api-key header
+    token = req.headers.get('x-api-key') or req.args.get('api_key')
+    if token:
+        return token == SADTALKER_API_KEY
+
+    return False
+
+
 @app.route('/healthz', methods=['GET'])
 def healthz():
     return 'OK', 200
@@ -72,6 +93,9 @@ def healthz():
 
 @app.route('/talk', methods=['POST'])
 def talk():
+    if not check_api_key(request):
+        return jsonify({'error': 'Unauthorized'}), 401
+
     if 'audio' not in request.files:
         return jsonify({'error': 'Missing audio file field `audio`'}), 400
 
@@ -97,6 +121,9 @@ def talk():
 
 @app.route('/speak', methods=['POST'])
 def speak():
+    if not check_api_key(request):
+        return jsonify({'error': 'Unauthorized'}), 401
+
     if edge_tts is None:
         return jsonify({'error': 'edge-tts not installed on server'}), 500
 

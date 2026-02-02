@@ -117,7 +117,7 @@ export function LifeCompanionScreen({
     try {
       // If user has a local SadTalker server configured, prefer it (automated TTS -> upload)
       if (profile.sadTalkerEnabled && profile.sadTalkerUrl) {
-        const res = await synthesizeTextToSadTalker(text, profile.sadTalkerUrl, companion.gender === 'female' ? 'en-US-JennyNeural' : 'en-US-GuyNeural');
+        const res = await synthesizeTextToSadTalker(text, profile.sadTalkerUrl, companion.gender === 'female' ? 'en-US-JennyNeural' : 'en-US-GuyNeural', profile.sadTalkerApiKey);
         if ('error' in res) {
           console.warn('SadTalker synthesis failed, falling back to D-ID:', res.error);
         } else {
@@ -178,7 +178,7 @@ export function LifeCompanionScreen({
       setIsGeneratingVideo(true);
       setDidVideoUrl(null);
       try {
-        const res = await sendAudioToSadTalker(f, profile.sadTalkerUrl!);
+        const res = await sendAudioToSadTalker(f, profile.sadTalkerUrl!, profile.sadTalkerApiKey);
         if ('error' in res) {
           console.error('SadTalker error:', res.error);
           alert('SadTalker error: ' + res.error);

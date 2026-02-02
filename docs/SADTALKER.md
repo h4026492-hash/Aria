@@ -95,3 +95,18 @@ Notes
 - Uploaded WAV should be a clean single-speaker speech file (16k/24k/44.1kHz WAV works). Output MP4 is returned as a blob URL and played in the avatar.
 
 Performance: A 10s clip on a T4 ~6-8s render time (depends on your machine and model versions).
+
+Authentication (optional)
+-------------------------
+If you set `SADTALKER_API_KEY` in the server environment, the server will require requests to include the API key.
+
+Clients should send the key using one of these headers:
+
+- Authorization: Bearer <YOUR_KEY>
+- x-api-key: <YOUR_KEY>
+
+Example:
+
+```bash
+curl -H "Authorization: Bearer $SADTALKER_API_KEY" -X POST http://SERVER_IP:5000/speak -H "Content-Type: application/json" -d '{"text":"Hello"}' --output out.mp4
+```

@@ -131,7 +131,7 @@ export function RealVideoCallScreen({
     setIsGenerating(true);
     setVideoUrl(null);
     try {
-      const res = await sendAudioToSadTalker(f, profile.sadTalkerUrl!);
+      const res = await sendAudioToSadTalker(f, profile.sadTalkerUrl!, profile.sadTalkerApiKey);
       if ('error' in res) {
         console.error('SadTalker error:', res.error);
         alert('SadTalker error: ' + res.error);

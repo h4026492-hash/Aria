@@ -35,6 +35,9 @@ export function VideoSettingsScreen({
   const handleSadTalkerUrlChange = (url: string) => {
     setProfile(prev => ({ ...prev, sadTalkerUrl: url }));
   };
+  const handleSadTalkerApiKeyChange = (key: string) => {
+    setProfile(prev => ({ ...prev, sadTalkerApiKey: key }));
+  };
 
   const handleCompanionChange = (newCompanion: VideoCompanion) => {
     setCompanion(newCompanion);
@@ -234,6 +237,16 @@ export function VideoSettingsScreen({
                 placeholder="http://your-server-ip:5000"
                 title="SadTalker server URL"
                 aria-label="SadTalker server URL"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <label className="text-sm text-white/50 block mt-2">SadTalker API Key (optional)</label>
+              <input
+                type="password"
+                value={profile.sadTalkerApiKey || ''}
+                onChange={(e) => handleSadTalkerApiKeyChange(e.target.value)}
+                placeholder="Optional API key for your SadTalker server"
+                title="SadTalker API Key"
+                aria-label="SadTalker API Key"
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <p className="text-white/50 text-xs">Example: <code>http://192.168.1.12:5000</code></p>

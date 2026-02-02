@@ -9,6 +9,7 @@ export interface UserProfile {
   // Local SadTalker server settings (optional)
   sadTalkerEnabled?: boolean;
   sadTalkerUrl?: string;
+  sadTalkerApiKey?: string;
   createdAt: Date;
 }
 
